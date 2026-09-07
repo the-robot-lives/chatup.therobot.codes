@@ -1,0 +1,102 @@
+<!doctype html>
+<html lang="en">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<title>Chat to Markdown — export any LLM chat as Markdown or YAML</title>
+<meta name="description" content="Browser extension that exports ChatGPT, Claude, Gemini, Le Chat, Open WebUI and more into clean Markdown or API-format YAML — copy, download, or preview. Local-only, no accounts.">
+<style>
+  :root { color-scheme: dark; }
+  * { box-sizing: border-box; }
+  body { margin: 0; background: #0e1218; color: #e8eaed; font: 16px/1.6 system-ui, -apple-system, sans-serif; }
+  a { color: #8fa4ff; text-decoration: none; }
+  a:hover { text-decoration: underline; }
+  .wrap { max-width: 880px; margin: 0 auto; padding: 0 24px; }
+  header { padding: 72px 0 48px; }
+  .logo { width: 72px; height: 72px; border-radius: 16px; background: #1f2430; border: 1px solid #3a4150; display: flex; align-items: center; justify-content: center; font-weight: 700; font-size: 15px; color: #8fa4ff; letter-spacing: .5px; }
+  h1 { font-size: 40px; line-height: 1.15; margin: 24px 0 12px; }
+  h1 span { color: #8fa4ff; }
+  .tagline { font-size: 19px; color: #aab3c0; max-width: 640px; }
+  .cta { display: flex; gap: 12px; flex-wrap: wrap; margin-top: 28px; }
+  .btn { display: inline-block; padding: 11px 20px; border-radius: 10px; font-weight: 600; font-size: 15px; }
+  .btn.primary { background: #4f6ef7; color: #fff; }
+  .btn.primary:hover { background: #3d5cf0; text-decoration: none; }
+  .btn.ghost { border: 1px solid #3a4150; color: #e8eaed; }
+  .btn.ghost:hover { background: #1f2430; text-decoration: none; }
+  section { padding: 36px 0; border-top: 1px solid #1f2430; }
+  h2 { font-size: 22px; margin: 0 0 18px; }
+  .grid { display: grid; grid-template-columns: repeat(auto-fit, minmax(240px, 1fr)); gap: 16px; }
+  .card { background: #151a23; border: 1px solid #242b38; border-radius: 12px; padding: 18px; }
+  .card h3 { margin: 0 0 8px; font-size: 15px; color: #8fa4ff; }
+  .card p { margin: 0; font-size: 14px; color: #aab3c0; }
+  code { background: #1f2430; border: 1px solid #2c3342; border-radius: 6px; padding: 1px 6px; font-size: 13px; }
+  .sites { display: flex; flex-wrap: wrap; gap: 8px; margin-top: 6px; }
+  .site { background: #151a23; border: 1px solid #242b38; border-radius: 999px; padding: 5px 14px; font-size: 13px; color: #aab3c0; }
+  .site b { color: #e8eaed; font-weight: 600; }
+  ol { color: #aab3c0; padding-left: 22px; }
+  ol li { margin: 6px 0; }
+  footer { padding: 40px 0 64px; color: #6b7480; font-size: 13px; border-top: 1px solid #1f2430; }
+</style>
+</head>
+<body>
+<div class="wrap">
+
+<header>
+  <div class="logo">MD ▾</div>
+  <h1>Your LLM chats, <span>as clean Markdown.</span></h1>
+  <p class="tagline">Chat to Markdown is a browser extension that turns conversations from the major
+  AI chat UIs into portable Markdown — or API-format YAML — with a floating panel:
+  preview, copy, download. Everything runs locally.</p>
+  <div class="cta">
+    <a class="btn primary" href="https://github.com/the-robot-lives/chat-to-markdown/releases/latest">Download latest zip</a>
+    <a class="btn ghost" href="https://github.com/the-robot-lives/chat-to-markdown">Source on GitHub</a>
+  </div>
+</header>
+
+<section>
+  <h2>Works where you chat</h2>
+  <div class="sites">
+    <span class="site"><b>ChatGPT</b></span>
+    <span class="site"><b>Claude</b> (incl. share pages)</span>
+    <span class="site"><b>Gemini</b></span>
+    <span class="site"><b>Le Chat</b> (Mistral)</span>
+    <span class="site"><b>use.ai</b> (Grok-powered)</span>
+    <span class="site"><b>Open WebUI</b> — any self-hosted instance</span>
+    <span class="site">grok.com · chat.groq.com (experimental)</span>
+  </div>
+</section>
+
+<section>
+  <h2>What you get</h2>
+  <div class="grid">
+    <div class="card"><h3>Markdown mode</h3><p>Front-matter header, <code>## User / ## Assistant</code> turns
+    separated by <code>* * *</code>, faithful code blocks, tables, lists, and math.</p></div>
+    <div class="card"><h3>YAML mode</h3><p>The full thread as an API-format payload: a <code>messages:</code>
+    list with <code>role:</code>/<code>content:</code> entries — ready for evals and replay.</p></div>
+    <div class="card"><h3>Tool calls, summarized</h3><p>Search/browse/code chips collapse to
+    <code>tool-call made to …</code> / <code>tool-call-response: …</code> lines instead of their payload.</p></div>
+    <div class="card"><h3>Local-only</h3><p>No accounts, no analytics, no servers. The extension reads
+    the page you're on and hands the result to you. <a href="https://github.com/the-robot-lives/chat-to-markdown/blob/main/PRIVACY.md">Privacy</a>.</p></div>
+  </div>
+</section>
+
+<section>
+  <h2>Install in 30 seconds (developer mode)</h2>
+  <ol>
+    <li>Grab <a href="https://github.com/the-robot-lives/chat-to-markdown/releases/latest">the latest release zip</a> and unzip it.</li>
+    <li>Open <code>chrome://extensions</code> (or <code>edge://extensions</code>) and enable <b>Developer mode</b>.</li>
+    <li>Click <b>Load unpacked</b> and select the unzipped folder.</li>
+    <li>Open any supported chat and hit the floating <b>MD ▾</b> button.</li>
+  </ol>
+</section>
+
+<footer>
+  Chat to Markdown — MIT licensed, built by <a href="https://therobotlives.com">TheRobotLives</a>.
+  <a href="https://github.com/the-robot-lives/chat-to-markdown">Source</a> ·
+  <a href="https://github.com/the-robot-lives/chat-to-markdown/blob/main/PRIVACY.md">Privacy</a> ·
+  <a href="https://github.com/the-robot-lives/chat-to-markdown/releases">Releases</a>
+</footer>
+
+</div>
+</body>
+</html>
