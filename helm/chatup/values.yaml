@@ -1,0 +1,15 @@
+static-site:
+  nameOverride: chatup
+  fullnameOverride: chatup
+  domain: chatup.therobot.codes
+  extraHosts: []
+  image: ghcr.io/the-robot-lives/chatup.therobot.codes:latest
+  port: 80
+  imagePullSecrets: []
+  tls:
+    secretName: chatup-therobot-codes-tls
+    infisical:
+      enabled: true
+      secretsPath: "/apps/tls/chatup.therobot.codes"
+      crtKey: CHATUP_TLS_CRT
+      keyKey: CHATUP_TLS_KEY
