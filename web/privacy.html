@@ -1,0 +1,51 @@
+<!doctype html>
+<html lang="en">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<title>Privacy — Chat to Markdown</title>
+<meta name="description" content="Chat to Markdown works entirely on your machine. No data collection, no accounts, no analytics.">
+<link rel="canonical" href="https://chatup.therobot.codes/privacy">
+<link rel="icon" type="image/png" href="/icons/icon48.png">
+<style>
+  :root { color-scheme: dark; --bg:#0b0d12; --ink:#eef1f6; --muted:#9aa3b2; --line:#232a38; --accent:#8fa4ff; --font:"IBM Plex Sans","Segoe UI",system-ui,sans-serif; }
+  * { box-sizing: border-box; }
+  body { margin: 0; background: var(--bg); color: var(--ink); font: 16px/1.65 var(--font); }
+  a { color: var(--accent); }
+  .wrap { max-width: 720px; margin: 0 auto; padding: 32px 24px 80px; }
+  nav { margin-bottom: 36px; font-size: 14px; }
+  h1 { font-size: 32px; letter-spacing: -0.03em; margin: 0 0 8px; }
+  .lede { color: var(--muted); }
+  h2 { font-size: 18px; margin: 28px 0 8px; }
+  p, li { color: var(--muted); }
+  ul { padding-left: 20px; }
+  code { font-family: ui-monospace, SFMono-Regular, Menlo, monospace; font-size: 0.9em; }
+</style>
+</head>
+<body>
+<div class="wrap">
+  <nav><a href="/">← Chat to Markdown</a></nav>
+  <h1>Privacy policy</h1>
+  <p class="lede">Chat to Markdown works entirely on your machine. Last updated 2026-04-07.</p>
+
+  <h2>No data collection</h2>
+  <p>The extension reads the conversation visible in the page you are on, converts it to Markdown or YAML locally, and hands the result to you (preview, clipboard, or download). Nothing is transmitted to any server — ours or anyone else’s.</p>
+
+  <h2>No accounts, analytics, or tracking</h2>
+  <p>There are no accounts, no analytics, no tracking, and no remotely hosted code. All logic ships inside the extension bundle.</p>
+
+  <h2>Permissions</h2>
+  <ul>
+    <li>The content script loads on all http(s) pages so it can recognize supported chat UIs wherever you use them — including self-hosted Open WebUI instances, which are detected by their DOM structure rather than by hostname. On pages it does not recognize, the script does nothing: no UI, no reads, no writes.</li>
+    <li>On a recognized chat site it reads the conversation you are viewing — the site you must already be logged into — so it can convert it for you.</li>
+    <li><code>clipboardWrite</code> copies the generated Markdown or YAML to your clipboard when you press Copy.</li>
+  </ul>
+
+  <h2>This website</h2>
+  <p>chatup.therobot.codes is a static landing page. It does not set cookies, does not run analytics, and does not collect form data.</p>
+
+  <h2>Questions</h2>
+  <p>Open an issue at <a href="https://github.com/the-robot-lives/chat-to-markdown/issues">github.com/the-robot-lives/chat-to-markdown/issues</a>.</p>
+</div>
+</body>
+</html>

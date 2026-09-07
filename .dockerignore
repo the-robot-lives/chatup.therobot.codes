@@ -1,0 +1,7 @@
+helm/
+Dockerfile
+.dockerignore
+.git
+.github
+*.md
+Makefile

@@ -4,99 +4,276 @@
 <meta charset="utf-8">
 <meta name="viewport" content="width=device-width, initial-scale=1">
 <title>Chat to Markdown — export any LLM chat as Markdown or YAML</title>
-<meta name="description" content="Browser extension that exports ChatGPT, Claude, Gemini, Le Chat, Open WebUI and more into clean Markdown or API-format YAML — copy, download, or preview. Local-only, no accounts.">
+<meta name="description" content="Browser extension that exports ChatGPT, Claude, Gemini, Le Chat, Open WebUI and more into clean Markdown or API-format YAML. Preview, copy, or download. Local-only — no accounts, no servers.">
+<meta name="robots" content="index, follow, max-snippet:-1, max-image-preview:large">
+<link rel="canonical" href="https://chatup.therobot.codes/">
+<link rel="icon" type="image/png" sizes="32x32" href="/icons/icon48.png">
+<link rel="icon" type="image/png" sizes="128x128" href="/icons/icon128.png">
+<link rel="apple-touch-icon" href="/apple-touch-icon.png">
+<meta property="og:type" content="website">
+<meta property="og:site_name" content="Chat to Markdown">
+<meta property="og:title" content="Chat to Markdown — your LLM chats, as clean Markdown">
+<meta property="og:description" content="Export ChatGPT, Claude, Gemini, Le Chat, Open WebUI and more to Markdown or YAML. Local-only. No accounts.">
+<meta property="og:url" content="https://chatup.therobot.codes/">
+<meta property="og:image" content="https://chatup.therobot.codes/icons/icon128.png">
+<meta name="twitter:card" content="summary">
+<meta name="twitter:title" content="Chat to Markdown">
+<meta name="twitter:description" content="Export LLM chats as clean Markdown or YAML. Local-only browser extension.">
+<script type="application/ld+json">
+{
+  "@context": "https://schema.org",
+  "@type": "SoftwareApplication",
+  "name": "Chat to Markdown",
+  "applicationCategory": "BrowserApplication",
+  "operatingSystem": "Chrome, Edge, Chromium",
+  "softwareVersion": "0.6.0",
+  "url": "https://chatup.therobot.codes/",
+  "downloadUrl": "https://github.com/the-robot-lives/chat-to-markdown/releases/latest",
+  "license": "https://opensource.org/licenses/MIT",
+  "offers": { "@type": "Offer", "price": "0", "priceCurrency": "USD" },
+  "author": { "@type": "Organization", "name": "TheRobotLives", "url": "https://therobotlives.com" },
+  "codeRepository": "https://github.com/the-robot-lives/chat-to-markdown",
+  "description": "Browser extension that exports LLM chat conversations as clean Markdown or API-format YAML. Runs entirely locally."
+}
+</script>
 <style>
-  :root { color-scheme: dark; }
+  :root {
+    color-scheme: dark;
+    --bg: #0b0d12;
+    --bg-raised: #131722;
+    --ink: #eef1f6;
+    --muted: #9aa3b2;
+    --faint: #6b7380;
+    --line: #232a38;
+    --accent: #4f6ef7;
+    --accent-2: #8fa4ff;
+    --ok: #5ee0a0;
+    --font: "IBM Plex Sans", "Segoe UI", system-ui, -apple-system, sans-serif;
+    --mono: "IBM Plex Mono", "SF Mono", ui-monospace, Menlo, Consolas, monospace;
+    --max: 1080px;
+  }
   * { box-sizing: border-box; }
-  body { margin: 0; background: #0e1218; color: #e8eaed; font: 16px/1.6 system-ui, -apple-system, sans-serif; }
-  a { color: #8fa4ff; text-decoration: none; }
+  html { scroll-behavior: smooth; }
+  @media (prefers-reduced-motion: reduce) { html { scroll-behavior: auto; } }
+  body {
+    margin: 0;
+    background: var(--bg);
+    color: var(--ink);
+    font: 16px/1.6 var(--font);
+  }
+  a { color: var(--accent-2); text-decoration: none; }
   a:hover { text-decoration: underline; }
-  .wrap { max-width: 880px; margin: 0 auto; padding: 0 24px; }
-  header { padding: 72px 0 48px; }
-  .logo { width: 72px; height: 72px; border-radius: 16px; background: #1f2430; border: 1px solid #3a4150; display: flex; align-items: center; justify-content: center; font-weight: 700; font-size: 15px; color: #8fa4ff; letter-spacing: .5px; }
-  h1 { font-size: 40px; line-height: 1.15; margin: 24px 0 12px; }
-  h1 span { color: #8fa4ff; }
-  .tagline { font-size: 19px; color: #aab3c0; max-width: 640px; }
-  .cta { display: flex; gap: 12px; flex-wrap: wrap; margin-top: 28px; }
-  .btn { display: inline-block; padding: 11px 20px; border-radius: 10px; font-weight: 600; font-size: 15px; }
-  .btn.primary { background: #4f6ef7; color: #fff; }
+  a:focus-visible, button:focus-visible {
+    outline: 2px solid var(--accent);
+    outline-offset: 3px;
+  }
+  .wrap { max-width: var(--max); margin: 0 auto; padding: 0 24px; }
+  nav {
+    display: flex; align-items: center; justify-content: space-between;
+    padding: 18px 0; gap: 16px;
+  }
+  .brand { display: flex; align-items: center; gap: 10px; color: var(--ink); font-weight: 600; }
+  .brand:hover { text-decoration: none; }
+  .brand img { width: 36px; height: 36px; border-radius: 9px; }
+  .nav-links { display: flex; gap: 18px; font-size: 14px; color: var(--muted); flex-wrap: wrap; }
+  .nav-links a { color: var(--muted); }
+  .nav-links a:hover { color: var(--ink); }
+  header.hero { padding: 48px 0 64px; display: grid; grid-template-columns: 1.1fr 0.9fr; gap: 40px; align-items: center; }
+  .eyebrow {
+    display: inline-flex; align-items: center; gap: 8px;
+    font-size: 12px; letter-spacing: .08em; text-transform: uppercase; color: var(--accent-2);
+    border: 1px solid var(--line); border-radius: 999px; padding: 4px 10px; background: var(--bg-raised);
+  }
+  h1 { font-size: clamp(32px, 5vw, 52px); line-height: 1.12; letter-spacing: -0.03em; margin: 16px 0 12px; font-weight: 600; }
+  h1 em { font-style: normal; color: var(--accent-2); }
+  .tagline { font-size: 18px; color: var(--muted); max-width: 36rem; margin: 0 0 24px; }
+  .cta { display: flex; gap: 12px; flex-wrap: wrap; align-items: center; }
+  .btn { display: inline-flex; align-items: center; gap: 8px; padding: 11px 18px; border-radius: 10px; font-weight: 600; font-size: 15px; border: 1px solid transparent; }
+  .btn.primary { background: var(--accent); color: #fff; }
   .btn.primary:hover { background: #3d5cf0; text-decoration: none; }
-  .btn.ghost { border: 1px solid #3a4150; color: #e8eaed; }
-  .btn.ghost:hover { background: #1f2430; text-decoration: none; }
-  section { padding: 36px 0; border-top: 1px solid #1f2430; }
-  h2 { font-size: 22px; margin: 0 0 18px; }
-  .grid { display: grid; grid-template-columns: repeat(auto-fit, minmax(240px, 1fr)); gap: 16px; }
-  .card { background: #151a23; border: 1px solid #242b38; border-radius: 12px; padding: 18px; }
-  .card h3 { margin: 0 0 8px; font-size: 15px; color: #8fa4ff; }
-  .card p { margin: 0; font-size: 14px; color: #aab3c0; }
-  code { background: #1f2430; border: 1px solid #2c3342; border-radius: 6px; padding: 1px 6px; font-size: 13px; }
-  .sites { display: flex; flex-wrap: wrap; gap: 8px; margin-top: 6px; }
-  .site { background: #151a23; border: 1px solid #242b38; border-radius: 999px; padding: 5px 14px; font-size: 13px; color: #aab3c0; }
-  .site b { color: #e8eaed; font-weight: 600; }
-  ol { color: #aab3c0; padding-left: 22px; }
-  ol li { margin: 6px 0; }
-  footer { padding: 40px 0 64px; color: #6b7480; font-size: 13px; border-top: 1px solid #1f2430; }
+  .btn.ghost { border-color: var(--line); color: var(--ink); }
+  .btn.ghost:hover { background: var(--bg-raised); text-decoration: none; }
+  .trust { margin-top: 18px; font-size: 13px; color: var(--faint); }
+  .trust b { color: var(--ok); font-weight: 600; }
+  .panel {
+    background: #0f1320; border: 1px solid var(--line); border-radius: 16px;
+    overflow: hidden; box-shadow: 0 20px 60px rgba(0,0,0,.35);
+  }
+  .panel-bar { display: flex; gap: 8px; padding: 10px 12px; border-bottom: 1px solid var(--line); background: var(--bg-raised); }
+  .chip { font: 12px/1 var(--mono); padding: 6px 10px; border-radius: 999px; border: 1px solid var(--line); color: var(--muted); }
+  .chip.on { color: #fff; background: #243056; border-color: #3a4d8a; }
+  .panel pre {
+    margin: 0; padding: 18px 20px 22px; font: 12.5px/1.55 var(--mono); color: #d5dbe8;
+    overflow: auto; min-height: 280px;
+  }
+  .tok-h { color: var(--accent-2); }
+  .tok-k { color: #c3a6ff; }
+  .tok-c { color: #7d8796; }
+  section { padding: 48px 0; border-top: 1px solid var(--line); }
+  h2 { font-size: 22px; margin: 0 0 8px; letter-spacing: -0.02em; }
+  .lede { color: var(--muted); margin: 0 0 22px; max-width: 40rem; }
+  .sites { display: flex; flex-wrap: wrap; gap: 8px; }
+  .site { background: var(--bg-raised); border: 1px solid var(--line); border-radius: 999px; padding: 6px 14px; font-size: 13px; color: var(--muted); }
+  .site b { color: var(--ink); font-weight: 600; }
+  .site.exp { opacity: .75; }
+  .grid { display: grid; grid-template-columns: repeat(auto-fit, minmax(230px, 1fr)); gap: 14px; }
+  .card { background: var(--bg-raised); border: 1px solid var(--line); border-radius: 14px; padding: 18px; }
+  .card h3 { margin: 0 0 8px; font-size: 15px; color: var(--accent-2); }
+  .card p { margin: 0; font-size: 14px; color: var(--muted); }
+  code { font-family: var(--mono); font-size: 0.9em; background: #1a2030; border: 1px solid #2a3344; border-radius: 5px; padding: 1px 5px; }
+  ol.steps { color: var(--muted); padding-left: 22px; }
+  ol.steps li { margin: 8px 0; }
+  .faq details { border-top: 1px solid var(--line); padding: 12px 0; }
+  .faq summary { cursor: pointer; font-weight: 600; }
+  .faq p { margin: 8px 0 0; color: var(--muted); font-size: 15px; }
+  footer { padding: 36px 0 64px; color: var(--faint); font-size: 13px; border-top: 1px solid var(--line); display: flex; justify-content: space-between; gap: 16px; flex-wrap: wrap; }
+  footer nav { padding: 0; gap: 14px; }
+  @media (max-width: 860px) {
+    header.hero { grid-template-columns: 1fr; padding-top: 24px; }
+    .panel pre { min-height: 0; }
+  }
 </style>
 </head>
 <body>
 <div class="wrap">
+  <nav aria-label="Primary">
+    <a class="brand" href="/">
+      <img src="/icons/icon128.png" width="36" height="36" alt="">
+      Chat to Markdown
+    </a>
+    <div class="nav-links">
+      <a href="#features">Features</a>
+      <a href="#install">Install</a>
+      <a href="#faq">FAQ</a>
+      <a href="/privacy">Privacy</a>
+      <a href="https://github.com/the-robot-lives/chat-to-markdown">GitHub</a>
+    </div>
+  </nav>
 
-<header>
-  <div class="logo">MD ▾</div>
-  <h1>Your LLM chats, <span>as clean Markdown.</span></h1>
-  <p class="tagline">Chat to Markdown is a browser extension that turns conversations from the major
-  AI chat UIs into portable Markdown — or API-format YAML — with a floating panel:
-  preview, copy, download. Everything runs locally.</p>
-  <div class="cta">
-    <a class="btn primary" href="https://github.com/the-robot-lives/chat-to-markdown/releases/latest">Download latest zip</a>
-    <a class="btn ghost" href="https://github.com/the-robot-lives/chat-to-markdown">Source on GitHub</a>
-  </div>
-</header>
+  <header class="hero">
+    <div>
+      <p class="eyebrow">v0.6 · MIT · Chromium</p>
+      <h1>Your LLM chats, <em>as clean Markdown.</em></h1>
+      <p class="tagline">Chat to Markdown is a browser extension that turns conversations from the major AI chat UIs into portable Markdown — or API-format YAML — with a floating panel: preview, copy, download. Everything runs on the page you already have open.</p>
+      <div class="cta">
+        <a class="btn primary" href="https://github.com/the-robot-lives/chat-to-markdown/releases/latest">Download latest zip</a>
+        <a class="btn ghost" href="https://github.com/the-robot-lives/chat-to-markdown">Source on GitHub</a>
+      </div>
+      <p class="trust"><b>Local-only.</b> No accounts, no analytics, no servers. The file never leaves your machine until you copy or save it.</p>
+    </div>
+    <aside class="panel" aria-label="Example export">
+      <div class="panel-bar">
+        <span class="chip on">MD</span>
+        <span class="chip">YAML</span>
+        <span class="chip">Copy</span>
+        <span class="chip">Save</span>
+      </div>
+      <pre><span class="tok-c">---
+title: Refactor the export panel
+source: claude.ai
+---</span>
 
-<section>
-  <h2>Works where you chat</h2>
-  <div class="sites">
-    <span class="site"><b>ChatGPT</b></span>
-    <span class="site"><b>Claude</b> (incl. share pages)</span>
-    <span class="site"><b>Gemini</b></span>
-    <span class="site"><b>Le Chat</b> (Mistral)</span>
-    <span class="site"><b>use.ai</b> (Grok-powered)</span>
-    <span class="site"><b>Open WebUI</b> — any self-hosted instance</span>
-    <span class="site">grok.com · chat.groq.com (experimental)</span>
-  </div>
-</section>
+<span class="tok-h">## User</span>
 
-<section>
-  <h2>What you get</h2>
-  <div class="grid">
-    <div class="card"><h3>Markdown mode</h3><p>Front-matter header, <code>## User / ## Assistant</code> turns
-    separated by <code>* * *</code>, faithful code blocks, tables, lists, and math.</p></div>
-    <div class="card"><h3>YAML mode</h3><p>The full thread as an API-format payload: a <code>messages:</code>
-    list with <code>role:</code>/<code>content:</code> entries — ready for evals and replay.</p></div>
-    <div class="card"><h3>Tool calls, summarized</h3><p>Search/browse/code chips collapse to
-    <code>tool-call made to …</code> / <code>tool-call-response: …</code> lines instead of their payload.</p></div>
-    <div class="card"><h3>Local-only</h3><p>No accounts, no analytics, no servers. The extension reads
-    the page you're on and hands the result to you. <a href="https://github.com/the-robot-lives/chat-to-markdown/blob/main/PRIVACY.md">Privacy</a>.</p></div>
-  </div>
-</section>
+Can you turn this thread into a PR description?
 
-<section>
-  <h2>Install in 30 seconds (developer mode)</h2>
-  <ol>
-    <li>Grab <a href="https://github.com/the-robot-lives/chat-to-markdown/releases/latest">the latest release zip</a> and unzip it.</li>
-    <li>Open <code>chrome://extensions</code> (or <code>edge://extensions</code>) and enable <b>Developer mode</b>.</li>
-    <li>Click <b>Load unpacked</b> and select the unzipped folder.</li>
-    <li>Open any supported chat and hit the floating <b>MD ▾</b> button.</li>
-  </ol>
-</section>
+<span class="tok-c">* * *</span>
 
-<footer>
-  Chat to Markdown — MIT licensed, built by <a href="https://therobotlives.com">TheRobotLives</a>.
-  <a href="https://github.com/the-robot-lives/chat-to-markdown">Source</a> ·
-  <a href="https://github.com/the-robot-lives/chat-to-markdown/blob/main/PRIVACY.md">Privacy</a> ·
-  <a href="https://github.com/the-robot-lives/chat-to-markdown/releases">Releases</a>
-</footer>
+<span class="tok-h">## Assistant</span>
 
+Here is a concise summary:
+
+- Floating <span class="tok-k">MD ▾</span> panel on supported chats
+- Markdown <span class="tok-k">or</span> API-format YAML
+- Tool calls collapsed to one-liners</pre>
+    </aside>
+  </header>
+
+  <section id="sites">
+    <h2>Works where you chat</h2>
+    <p class="lede">Site adapters are small and isolated. The converter never sees vendor DOM — only a title and a list of turns.</p>
+    <div class="sites">
+      <span class="site"><b>ChatGPT</b></span>
+      <span class="site"><b>Claude</b> · including share pages</span>
+      <span class="site"><b>Gemini</b></span>
+      <span class="site"><b>Le Chat</b> · Mistral</span>
+      <span class="site"><b>use.ai</b> · Grok-powered</span>
+      <span class="site"><b>Open WebUI</b> · any self-hosted instance</span>
+      <span class="site exp">grok.com · chat.groq.com · experimental</span>
+    </div>
+  </section>
+
+  <section id="features">
+    <h2>What you get</h2>
+    <p class="lede">One click on the floating <code>MD ▾</code> button. Preview before you copy. Flip newest-first if that is how you read.</p>
+    <div class="grid">
+      <div class="card">
+        <h3>Markdown mode</h3>
+        <p>Front-matter header, <code>## User / ## Assistant</code> turns separated by <code>* * *</code>, faithful code blocks, tables, lists, and math.</p>
+      </div>
+      <div class="card">
+        <h3>YAML mode</h3>
+        <p>The full thread as an API-format payload: a <code>messages:</code> list with <code>role:</code>/<code>content:</code> entries — ready for evals and replay.</p>
+      </div>
+      <div class="card">
+        <h3>Tool calls, summarized</h3>
+        <p>Search, browse, and code chips collapse to <code>tool-call made to …</code> / <code>tool-call-response: …</code> instead of dumping their payload.</p>
+      </div>
+      <div class="card">
+        <h3>Message order</h3>
+        <p>The ⇅ toggle flips chronological (oldest first) and newest-first so the export matches how you actually scroll the thread.</p>
+      </div>
+      <div class="card">
+        <h3>Open WebUI, anywhere</h3>
+        <p>Self-hosted instances are detected by DOM, not hostname. The script injects everywhere and stays inert on pages it does not recognize.</p>
+      </div>
+      <div class="card">
+        <h3>Local-only</h3>
+        <p>No accounts, no analytics, no remote code. The extension reads the conversation you are viewing and hands you the file. <a href="/privacy">Privacy policy</a>.</p>
+      </div>
+    </div>
+  </section>
+
+  <section id="install">
+    <h2>Install in 30 seconds (developer mode)</h2>
+    <p class="lede">Not on the Chrome Web Store yet. Load the release zip unpacked — same path on Chrome or Edge.</p>
+    <ol class="steps">
+      <li>Grab <a href="https://github.com/the-robot-lives/chat-to-markdown/releases/latest">the latest release zip</a> and unzip it.</li>
+      <li>Open <code>chrome://extensions</code> (or <code>edge://extensions</code>) and enable <b>Developer mode</b>.</li>
+      <li>Click <b>Load unpacked</b> and select the unzipped folder.</li>
+      <li>Open any supported chat and hit the floating <b>MD ▾</b> button. Reload the extension card after updates, then refresh the chat tab.</li>
+    </ol>
+  </section>
+
+  <section id="faq" class="faq">
+    <h2>FAQ</h2>
+    <details>
+      <summary>Does any chat content leave my browser?</summary>
+      <p>No. Parsing, preview, copy, and download all happen in the page. There is no backend, no account, and no telemetry. See the <a href="/privacy">privacy policy</a>.</p>
+    </details>
+    <details>
+      <summary>Why does it request access to all http(s) pages?</summary>
+      <p>So it can recognize self-hosted Open WebUI (and future adapters) by DOM structure rather than a hostname allow-list. On unrecognized pages it does nothing: no UI, no reads, no writes.</p>
+    </details>
+    <details>
+      <summary>Will this be on the Chrome Web Store?</summary>
+      <p>That is the next distribution step. Until then the GitHub release zip is the supported install. The hosted privacy policy at this domain is the store listing URL.</p>
+    </details>
+    <details>
+      <summary>Can I add another chat site?</summary>
+      <p>Yes. Adapters are one file each. See the <a href="https://github.com/the-robot-lives/chat-to-markdown#development">development notes</a> — PRs that add an adapter are welcome.</p>
+    </details>
+  </section>
+
+  <footer>
+    <div>Chat to Markdown — MIT, built by <a href="https://therobotlives.com">TheRobotLives</a>.</div>
+    <nav aria-label="Footer">
+      <a href="https://github.com/the-robot-lives/chat-to-markdown">Source</a>
+      <a href="/privacy">Privacy</a>
+      <a href="https://github.com/the-robot-lives/chat-to-markdown/releases">Releases</a>
+      <a href="https://therobot.codes">therobot.codes</a>
+    </nav>
+  </footer>
 </div>
 </body>
 </html>

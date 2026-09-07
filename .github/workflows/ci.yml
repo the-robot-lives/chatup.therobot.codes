@@ -1,0 +1,147 @@
+name: CI
+
+# Static nginx landing. PRs docker-build + smoke. Push to `main` smokes, then
+# pushes a sha-* image and bumps the chart so ArgoCD can sync. Never bump by hand.
+
+on:
+  push:
+    branches: [main]
+  pull_request:
+
+concurrency:
+  group: ci-${{ github.ref }}
+  cancel-in-progress: true
+
+env:
+  REGISTRY: ops.noizu.com
+  IMAGE: ops.noizu.com/chatup.therobot.codes/web
+
+jobs:
+  docker-build:
+    if: github.event_name == 'pull_request'
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v4
+      - uses: docker/setup-buildx-action@v3
+      - uses: docker/build-push-action@v6
+        with:
+          context: .
+          target: production
+          platforms: linux/amd64
+          push: false
+          tags: ${{ env.IMAGE }}:ci
+          cache-from: type=gha,scope=web
+          cache-to: type=gha,scope=web,mode=max
+
+  smoke:
+    needs: docker-build
+    if: github.event_name == 'pull_request'
+    runs-on: ubuntu-latest
+    timeout-minutes: 2
+    steps:
+      - uses: actions/checkout@v4
+      - uses: docker/setup-buildx-action@v3
+      - uses: docker/build-push-action@v6
+        with:
+          context: .
+          target: production
+          push: false
+          load: true
+          tags: ${{ env.IMAGE }}:ci
+          cache-from: type=gha,scope=web
+      - name: Boot image and probe
+        run: |
+          docker run --rm -d --name chatup-ci -p 8080:80 "${IMAGE}:ci"
+          trap 'docker rm -f chatup-ci >/dev/null 2>&1 || true' EXIT
+          ok=0
+          for _ in $(seq 1 30); do
+            if curl -sf http://127.0.0.1:8080/nginx-health >/dev/null; then
+              ok=1
+              break
+            fi
+            if curl -sf -o /dev/null http://127.0.0.1:8080/; then
+              ok=1
+              break
+            fi
+            sleep 1
+          done
+          if [ "$ok" != 1 ]; then
+            docker logs chatup-ci || true
+            exit 1
+          fi
+
+  build-push:
+    if: github.event_name == 'push' && github.ref == 'refs/heads/main'
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v4
+      - uses: docker/setup-buildx-action@v3
+      - uses: docker/login-action@v3
+        with:
+          registry: ${{ env.REGISTRY }}
+          username: ${{ secrets.REGISTRY_USER }}
+          password: ${{ secrets.REGISTRY_PASSWORD }}
+      - name: Short SHA
+        id: sha
+        run: echo "short=${GITHUB_SHA::7}" >> "$GITHUB_OUTPUT"
+      - name: Build (load for smoke)
+        uses: docker/build-push-action@v6
+        with:
+          context: .
+          target: production
+          push: false
+          load: true
+          tags: ${{ env.IMAGE }}:sha-${{ steps.sha.outputs.short }}
+          cache-from: type=gha,scope=web
+          cache-to: type=gha,scope=web,mode=max
+      - name: Smoke
+        run: |
+          docker run --rm -d --name chatup-ci -p 8080:80 "${IMAGE}:sha-${GITHUB_SHA::7}"
+          trap 'docker rm -f chatup-ci >/dev/null 2>&1 || true' EXIT
+          ok=0
+          for _ in $(seq 1 30); do
+            if curl -sf http://127.0.0.1:8080/nginx-health >/dev/null; then
+              ok=1
+              break
+            fi
+            if curl -sf -o /dev/null http://127.0.0.1:8080/; then
+              ok=1
+              break
+            fi
+            sleep 1
+          done
+          if [ "$ok" != 1 ]; then
+            docker logs chatup-ci || true
+            exit 1
+          fi
+      - name: Push
+        uses: docker/build-push-action@v6
+        with:
+          context: .
+          target: production
+          platforms: linux/amd64
+          push: true
+          tags: ${{ env.IMAGE }}:sha-${{ steps.sha.outputs.short }}
+          cache-from: type=gha,scope=web
+          cache-to: type=gha,scope=web,mode=max
+
+  bump-chart:
+    needs: build-push
+    runs-on: ubuntu-latest
+    permissions:
+      contents: write
+    steps:
+      - uses: actions/checkout@v4
+      - name: Bump image tags
+        run: |
+          SHORT=${GITHUB_SHA::7}
+          sed -i -E "s|(image: ops\.noizu\.com/chatup\.therobot\.codes/web:).*|\1sha-${SHORT}|" helm/chatup/values.yaml
+      - name: Commit & push
+        run: |
+          git config user.name "chatup-ci"
+          git config user.email "ci@noizu.com"
+          git add helm/chatup/values.yaml
+          git diff --cached --quiet && exit 0
+          git commit -m "ci: deploy sha-${GITHUB_SHA::7} [skip ci]"
+          git pull --rebase origin ${{ github.ref_name }}
+          git push

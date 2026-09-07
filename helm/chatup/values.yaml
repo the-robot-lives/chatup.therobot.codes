@@ -3,13 +3,14 @@ static-site:
   fullnameOverride: chatup
   domain: chatup.therobot.codes
   extraHosts: []
-  image: ghcr.io/the-robot-lives/chatup.therobot.codes:latest
+  image: ops.noizu.com/chatup.therobot.codes/web:sha-0000000
   port: 80
-  imagePullSecrets: []
+  imagePullSecrets:
+    - name: ops-registry-secret
   tls:
     secretName: chatup-therobot-codes-tls
     infisical:
       enabled: true
-      secretsPath: "/apps/tls/chatup.therobot.codes"
+      secretsPath: "/apps/tls/chatuptherobotcodes"
       crtKey: CHATUP_TLS_CRT
       keyKey: CHATUP_TLS_KEY

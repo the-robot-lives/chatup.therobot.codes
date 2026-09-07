@@ -1,0 +1,19 @@
+# Chat to Markdown
+
+> Browser extension that exports LLM chat conversations as clean Markdown or API-format YAML. Local-only.
+
+- Site: https://chatup.therobot.codes/
+- Source: https://github.com/the-robot-lives/chat-to-markdown
+- Privacy: https://chatup.therobot.codes/privacy
+- License: MIT
+- Publisher: TheRobotLives (https://therobotlives.com)
+
+## Product
+
+Chat to Markdown injects a floating MD ▾ panel on supported chat UIs. It converts the visible thread to Markdown (front-matter + User/Assistant turns) or YAML (`messages:` with role/content) and lets you preview, copy, or download. Parsing never leaves the page.
+
+Supported: ChatGPT, Claude (including share pages), Gemini, Le Chat (Mistral), use.ai, Open WebUI (any self-hosted instance). Experimental: grok.com, chat.groq.com.
+
+## Install
+
+Not on the Chrome Web Store yet. Download the release zip, then Chrome/Edge → Extensions → Developer mode → Load unpacked.
