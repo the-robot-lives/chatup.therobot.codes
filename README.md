@@ -27,15 +27,22 @@ PRs target `develop`. `main` is CI/CD-only.
 
 ### 1. Provision the origin TLS cert (once)
 
+`chatup.therobot.codes` is an A record on the existing `therobot.codes` zone
+(TRL Cloudflare account). Origin CA stack is local-state terraform (no
+terragrunt), in the **monorepo**:
+
 ```bash
 cd terraform/cloudflare/origin-certs-chatup
-# needs TF_VAR_noizu_cloudflare_api_token with "SSL and Certificates: Edit" (Origin CA) scope
-terragrunt apply          # mints CF Origin CA cert (local state)
-infisical-populate-secrets   # pushes cert -> Infisical /apps/tls/chatuptherobotcodes
+# needs TF_VAR_trl_cloudflare_api_token with "SSL and Certificates: Edit" (Origin CA)
+terraform init
+terraform apply          # writes .secrets/tls/chatuptherobotcodes/{cert,key}.pem
+cd ../../..
+infisical-populate-secrets --include apps-tls-chatuptherobotcodes
 ```
 
-Then in the Cloudflare dashboard set the `chatup.therobot.codes` zone **SSL/TLS
-mode = Full (Strict)** (the origin now has a valid CF Origin CA cert).
+Zone SSL/TLS mode is already Full (Strict) on `therobot.codes`. A 526 means
+the origin ingress is presenting a cert that does not include
+`chatup.therobot.codes`.
 
 ### 2. GitHub Actions on `main`
 
