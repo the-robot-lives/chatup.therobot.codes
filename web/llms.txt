@@ -3,6 +3,7 @@
 > Browser extension that exports LLM chat conversations as clean Markdown or API-format YAML. Local-only.
 
 - Site: https://chatup.therobot.codes/
+- Store: https://chromewebstore.google.com/detail/kekkhoakofhpfdiienhjchkedomplkna
 - Source: https://github.com/the-robot-lives/chat-to-markdown
 - Privacy: https://chatup.therobot.codes/privacy
 - License: MIT
@@ -16,4 +17,6 @@ Supported: ChatGPT, Claude (including share pages), Gemini, Le Chat (Mistral), u
 
 ## Install
 
-Not on the Chrome Web Store yet. Download the release zip, then Chrome/Edge → Extensions → Developer mode → Load unpacked.
+Install from the Chrome Web Store (works on Chrome/Edge/Chromium): https://chromewebstore.google.com/detail/kekkhoakofhpfdiienhjchkedomplkna
+
+Manual alternative: download the release zip, then Chrome/Edge → Extensions → Developer mode → Load unpacked.
